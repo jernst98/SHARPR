@@ -252,7 +252,7 @@ public class SHARPR
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
+    /*
    public static class RecRatio 
    { 
       double ddnacount;
@@ -299,6 +299,7 @@ public class SHARPR
 	 }
       }
    }
+    */
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -333,24 +334,30 @@ public class SHARPR
 
           BufferedReader brdna = Util.getBufferedReader(szdnafile);
 
-          String szLine;
+          String szLine_rna;
+          String szLine_dna = brdna.readLine();
+
+          //String szLine;
 
           int numlines = 0;
-          StringTokenizer st = new StringTokenizer(brdna.readLine(),"\t");
+	  if (szLine_dna == null)
+	  {
+	      throw new IllegalArgumentException(szdnafile+" is empty!");
+	  }
+          StringTokenizer st = new StringTokenizer(szLine_dna,"\t");
            //the number of columns corresponds to the number of headers - assumes no header for id column
           int numcols = st.countTokens();
           double dsumdna = 0;
           double dsumrna = 0;
 
-          String szLine_rna;
-          String szLine_dna;
+
            //storing the probes and the total dna count
-          ArrayList alprobes = new ArrayList();
+          //ArrayList alprobes = new ArrayList();
           while ((szLine_dna = brdna.readLine())!=null)
           {
               st = new StringTokenizer(szLine_dna,"\t");
               String sztoken = st.nextToken();
-              alprobes.add(sztoken);
+              //alprobes.add(sztoken);
               while (st.hasMoreTokens())
               {
                  dsumdna += Double.parseDouble(st.nextToken())+ndnapseudocount;
@@ -388,6 +395,10 @@ public class SHARPR
 	     StringTokenizer strna = new StringTokenizer(szLine_rna,"\t");
 	     String szrnaid = strna.nextToken();
 
+	     if (szLine_dna == null)
+	     {
+		 throw new IllegalArgumentException("There are more lines in "+szrnafile+" than in  "+szdnafile+" expecting the same number");
+	     }
  	     StringTokenizer stdna = new StringTokenizer(szLine_dna,"\t");
 	     String szdnaid = stdna.nextToken();
 
@@ -428,7 +439,7 @@ public class SHARPR
 	        if ((dnacount[nline][ncol]>=(ndnacutoff+ndnapseudocount)))
 	        {
 	           double dratioval = ratio[nline][ncol];
-	           ratiosAL.add(new Double(dratioval));
+	           ratiosAL.add(Double.valueOf(dratioval));
 		}
 	     }
 
@@ -519,7 +530,7 @@ public class SHARPR
 	     if (objcount == null)
 	     {
 	        allabels.add(szlabel);
-	        hmlabels.put(szlabel,new Integer(nlabelindex));
+	        hmlabels.put(szlabel, Integer.valueOf(nlabelindex));
 	        nlabelindex++;
 	     }
 	  }
@@ -609,7 +620,7 @@ public class SHARPR
 	   }
 
 
-	   ArrayList alvals = new ArrayList();
+	   //ArrayList alvals = new ArrayList();
 	   int npos = 0;
 	   double dval = 0;
 	   double dvalsq = 0;
@@ -662,9 +673,9 @@ public class SHARPR
 
 	   for (int npriorindex = 0; npriorindex < priorvalsA.length; npriorindex++)
 	   {
-	       double[] datavals = new double[numhiddenvalstotal];
+	       //double[] datavals = new double[numhiddenvalstotal];
 
-	       double[] datavalssum = new double[numhiddenvalstotal];
+	       //double[] datavalssum = new double[numhiddenvalstotal];
 	       double[][] dhiddenvalA = new double[numlines][numhiddenvalstotal];
 
 	       double[][] meanX = new double[numhiddenvalstotal][1];
@@ -678,11 +689,11 @@ public class SHARPR
 
                for (int nrow = 0; nrow < data.length; nrow++)
                {
-                  for (int nval = 0; nval < datavals.length; nval++)
-	          {
-	             datavals[nval] = dinitmean;
-	             datavalssum[nval] = 0;
-		  }
+		   //for (int nval = 0; nval < datavals.length; nval++)
+		   //{
+	           //  datavals[nval] = dinitmean;
+		   //   datavalssum[nval] = 0;
+		   //}
 	          double[] data_nrow = data[nrow];
 	          boolean[] bpresent_nrow = bpresent[nrow];
 
@@ -783,9 +794,10 @@ public class SHARPR
 
                   for (int nrowindex = 0; nrowindex < dhiddenvalA.length; nrowindex++)
                   {
-	             for (int nk = 0; nk < datavalssum.length; nk++)
+		     double[] dhiddenvalA_nrowindex = dhiddenvalA[nrowindex];
+	             for (int nk = 0; nk < dhiddenvalA_nrowindex.length; nk++)
                      {
-		        infervalsA[npriorindex][nfile][nrowindex][nk] = nf.format((dhiddenvalA[nrowindex][nk]-dmeanhidden)/dstdhidden);
+		        infervalsA[npriorindex][nfile][nrowindex][nk] = nf.format((dhiddenvalA_nrowindex[nk]-dmeanhidden)/dstdhidden);
        		     }
 		  }
 	       }
@@ -793,9 +805,10 @@ public class SHARPR
                {
                   for (int nrowindex = 0; nrowindex < dhiddenvalA.length; nrowindex++)
                   {
-	             for (int nk = 0; nk < datavalssum.length; nk++)
+		      double[] dhiddenvalA_nrowindex = dhiddenvalA[nrowindex];
+	             for (int nk = 0; nk < dhiddenvalA_nrowindex.length; nk++)
                      {
-		        infervalsA[npriorindex][nfile][nrowindex][nk] = nf.format(dhiddenvalA[nrowindex][nk]);
+		        infervalsA[npriorindex][nfile][nrowindex][nk] = nf.format(dhiddenvalA_nrowindex[nk]);
 		     }
 		  }
 	       }
@@ -955,7 +968,7 @@ public class SHARPR
 	    {
 		if ((nbasetooverlap == -1)||(nbasetooverlap == npos))
 		{
-		    hmfeature.put(szchrom+"\t"+ncoord, new Boolean(false));
+		    hmfeature.put(szchrom+"\t"+ncoord, Boolean.valueOf(false));
 		}
 		npos++;
 	    }
@@ -975,7 +988,7 @@ public class SHARPR
 	    {
 	       if (hmfeature.get(szchrom+"\t"+ncoord)!=null)
 	       {
-                  hmfeature.put(szchrom+"\t"+ncoord, new Boolean(true));
+                  hmfeature.put(szchrom+"\t"+ncoord, Boolean.valueOf(true));
 	       }
 	    }	     
 	}
@@ -1065,7 +1078,7 @@ public class SHARPR
 			   bmaxhit = bhit;
 		       }
 		   }
-		   else if (!bmaxenrich)
+		   else //if (!bmaxenrich)
 		   {
 		       if (bhit)
 		       {
@@ -1360,12 +1373,12 @@ public class SHARPR
 	      if (dcurrval != dlastval)//||(nindex == baseA.length - 1))
 	      {
 	         double dratio = nsumabove/((double) nsumabove+nsumnotabove);
-		 double dcurratio = ncurrabove/((double) ncurrabove+ncurrnotabove);
-		 double dbinavg = dbinsum/nbincount;
+		 //double dcurratio = ncurrabove/((double) ncurrabove+ncurrnotabove);
+		 //double dbinavg = dbinsum/nbincount;
 
-		 altotal.add(new Double(dlastval));
-		 aldenom.add(new Integer(ncurrabove+ncurrnotabove));
-		 alnumer.add(new Integer(ncurrabove));
+		 altotal.add(Double.valueOf(dlastval));
+		 aldenom.add(Integer.valueOf(ncurrabove+ncurrnotabove));
+		 alnumer.add(Integer.valueOf(ncurrabove));
 
 		 ncurrbin++;
 		 dbinsum = 0;
@@ -1390,9 +1403,9 @@ public class SHARPR
 	      nbincount++;
 	   }
 
-	   altotal.add(new Double(dcurrval));
-	   aldenom.add(new Integer(ncurrabove+ncurrnotabove));
-	   alnumer.add(new Integer(ncurrabove));
+	   altotal.add(Double.valueOf(dcurrval));
+	   aldenom.add(Integer.valueOf(ncurrabove+ncurrnotabove));
+	   alnumer.add(Integer.valueOf(ncurrabove));
 
 	   // int SUMTHRESH = 500;
 	   int nfirstindex = 0;
@@ -1594,6 +1607,10 @@ public class SHARPR
 	    for (int nk = 1; nk < albr1.size(); nk++)
 	    {
 		szLine = ((BufferedReader) albr1.get(nk)).readLine();
+		if (szLine == null)
+		{
+                    throw new IllegalArgumentException("Not all files in "+szcombinefileset1+" have the same number of lines!");
+		}
 		stA1[nk] = new StringTokenizer(szLine,"\t");
 		String szcurrID = stA1[nk].nextToken();
 		if (!szcurrID.equals(szID))
@@ -1607,6 +1624,10 @@ public class SHARPR
 	       for (int nk = 0; nk < albr2.size(); nk++)
 	       {
 		   szLine = ((BufferedReader) albr2.get(nk)).readLine();
+		   if (szLine == null)
+		   {
+                      throw new IllegalArgumentException("Not all files in "+szcombinefileset2+" have the same number of lines with "+szcombinefileset1);
+		   }
 		   stA2[nk] = new StringTokenizer(szLine,"\t");
 		   String szcurrID = stA2[nk].nextToken();
 		   if (!szcurrID.equals(szID))
@@ -1680,14 +1701,22 @@ public class SHARPR
        String szLine;
 
        int numlines = 0;
-       StringTokenizer st = new StringTokenizer(brdna.readLine(),"\t");
+       String szLine_rna;
+       String szLine_dna;
+
+       szLine_dna = brdna.readLine();
+       if (szLine_dna == null)
+       {
+          throw new IllegalArgumentException(szdnafile+" is empty!");
+       }
+
+       StringTokenizer st = new StringTokenizer(szLine_dna,"\t");
        //the number of columns corresponds to the number of headers - assumes no header for id column
        int numcols = st.countTokens();
        double dsumdna = 0;
        double dsumrna = 0;
 
-       String szLine_rna;
-       String szLine_dna;
+
        //storing the probes and the total dna count
        ArrayList alprobes = new ArrayList();
        while ((szLine_dna = brdna.readLine())!=null)
@@ -1725,6 +1754,12 @@ public class SHARPR
        while ((szLine_rna = brrna.readLine())!=null)
        {
           szLine_dna = brdna.readLine();
+
+	  if (szLine_dna == null)
+	  {
+              throw new IllegalArgumentException("RNA file "+szrnafile+" has more lines than "+szdnafile+" expecting the same number");
+	  }
+
 
 	  StringTokenizer strna = new StringTokenizer(szLine_rna,"\t");
 	  String szrnaid = strna.nextToken();
@@ -1782,7 +1817,7 @@ public class SHARPR
 	        double dratioval = ratio[nline][ncol];
 
 	        //ratios[nline].add(new Double(dratioval));
-	        ratiosAL.add(new Double(dratioval));
+	        ratiosAL.add(Double.valueOf(dratioval));
 
 		if (pwoutnoavg != null)
 		{
@@ -1901,7 +1936,7 @@ public class SHARPR
 	  if (objcount == null)
 	  {
 	      allabels.add(szlabel);
-	      hmlabels.put(szlabel,new Integer(nlabelindex));
+	      hmlabels.put(szlabel, Integer.valueOf(nlabelindex));
 	      nlabelindex++;
 	  }
        }
@@ -2202,7 +2237,7 @@ public class SHARPR
        boolean[][] bpresent = new boolean[numlines][numtiles];
        String[] labels = new String[numlines];
 
-       ArrayList alvals = new ArrayList();
+       //ArrayList alvals = new ArrayList();
        int nrow = 0;
        int npos = 0;
        double dval = 0;
@@ -2280,9 +2315,9 @@ public class SHARPR
        }
        */
 
-       double[] datavals = new double[numhiddenvalstotal];
+       //double[] datavals = new double[numhiddenvalstotal];
 
-       double[] datavalssum = new double[numhiddenvalstotal];
+       //double[] datavalssum = new double[numhiddenvalstotal];
        double[][] dhiddenvalA = new double[numlines][numhiddenvalstotal];
 
        double[][] meanX = new double[numhiddenvalstotal][1];
@@ -2298,12 +2333,12 @@ public class SHARPR
 
        for (nrow = 0; nrow < data.length; nrow++)
        {
-	  System.out.println(nrow);
-          for (int nval = 0; nval < datavals.length; nval++)
-	  {
-	     datavals[nval] = dinitmean;
-	     datavalssum[nval] = 0;
-	  }
+	   //System.out.println(nrow);
+	   //for (int nval = 0; nval < datavals.length; nval++)
+	   //{
+	   //  datavals[nval] = dinitmean;
+	   //  datavalssum[nval] = 0;
+	   //}
 	  double[] data_nrow = data[nrow];
 	  boolean[] bpresent_nrow = bpresent[nrow];
 
@@ -2380,8 +2415,7 @@ public class SHARPR
              RealMatrix theRealMatrixCovarYY = MatrixUtils.createRealMatrix(covarYY);
 
              dhiddenvalA[nrow] = theRealMatrixMeanX.add(theRealMatrixCovarXY.multiply(MatrixUtils.inverse(theRealMatrixCovarYY).multiply(							                                                    theRealMatrixObservedY.subtract(theRealMatrixMeanY)))).getColumn(0);
-
-
+	     /*
 	     if (nrow == 0)
 	     {
 		 System.out.println("meanY");
@@ -2439,8 +2473,8 @@ public class SHARPR
 		     System.out.println();
 		 }
 
-
 	     }
+	     */
 	
 	  }
        }
@@ -2469,9 +2503,10 @@ public class SHARPR
           for (int nrowindex = 0; nrowindex < labels.length; nrowindex++)
           {
 	     pw.print(labels[nrowindex]);
-	     for (int nk = 0; nk < datavalssum.length; nk++)
+	     double[] dhiddenvalA_nrowindex = dhiddenvalA[nrowindex];
+	     for (int nk = 0; nk < dhiddenvalA_nrowindex.length; nk++)
              {
-		 pw.print("\t"+nf.format((dhiddenvalA[nrowindex][nk]-dmeanhidden)/dstdhidden));
+		 pw.print("\t"+nf.format((dhiddenvalA_nrowindex[nk]-dmeanhidden)/dstdhidden));
 	     }
 	     pw.println();
 	  }
@@ -2482,9 +2517,10 @@ public class SHARPR
           for (int nrowindex = 0; nrowindex < labels.length; nrowindex++)
           {
 	     pw.print(labels[nrowindex]);
-	     for (int nk = 0; nk < datavalssum.length; nk++)
+             double[] dhiddenvalA_nrowindex = dhiddenvalA[nrowindex];
+	     for (int nk = 0; nk < dhiddenvalA_nrowindex.length; nk++)
              {
-	        pw.print("\t"+nf.format(dhiddenvalA[nrowindex][nk]));
+	        pw.print("\t"+nf.format(dhiddenvalA_nrowindex[nk]));
 	     }
 	     pw.println();
 	  }
@@ -2587,7 +2623,7 @@ public class SHARPR
 	String[][][] ids = null;
 	double[][][] pvalsLESS = null;
         double[][][] pvalsGREATER = null;
-	double[][][] pvals = null;
+	//double[][][] pvals = null;
 
 	//double[][][] randomizedpvalsLESS = null;
 	//double[][][] randomizedpvalsGREATER = null;
@@ -2597,7 +2633,7 @@ public class SHARPR
 	double[][] combinedpvalsLESS = null;
         double[][] combinedpvalsGREATER = null;
 
-	double[][] combinedpvals = null;
+	//double[][] combinedpvals = null;
 
         //double[][] combinedrandomizedpvalsLESS = null;
         //double[][] combinedrandomizedpvalsGREATER = null;
@@ -2664,7 +2700,13 @@ public class SHARPR
 		for (int ntile = 0; ntile < alvals[nfile][nseq].length; ntile++)
 		{
 		    if (ntile >=1)
-			szLine = br.readLine();
+		    {
+		       szLine = br.readLine();
+		       if (szLine == null)
+		       {
+			   throw new IllegalArgumentException("In "+szdatafile+" we don't have data for every sequence and tile position expecting");
+		       }
+		    }
 		    alvals[nfile][nseq][ntile] = new ArrayList();
 		    StringTokenizer st =new StringTokenizer(szLine,"\t");
 		    //st.nextToken();
@@ -2676,7 +2718,7 @@ public class SHARPR
 
 		    while (st.hasMoreTokens())
 		    {
-	               alvals[nfile][nseq][ntile].add(new Double(Double.parseDouble(st.nextToken())));		       
+	               alvals[nfile][nseq][ntile].add(Double.valueOf(Double.parseDouble(st.nextToken())));		       
 		    }
 		}
 	       
@@ -2798,8 +2840,8 @@ public class SHARPR
 	//for (int ni = 0; ni < fullrandomizedpvals.length; ni++)
 	//  System.out.println(ni+"\t"+fullrandomizedpvals[ni]);
 
-	this.szsequences = szsequences;
-	this.nextension = nextension;
+	//this.szsequences = szsequences;
+	//this.nextension = nextension;
 	BufferedReader brsequences = Util.getBufferedReader(szsequences);
 	HashMap hmsequences = new HashMap();
 
@@ -2875,12 +2917,14 @@ public class SHARPR
 
 	       String szchrom1 = st1.nextToken();
 	       int nbegin1 = Integer.parseInt(st1.nextToken());
-	       int nend1 = Integer.parseInt(st1.nextToken());
+	       //int nend1 =
+               Integer.parseInt(st1.nextToken());
 
 
 	       // System.out.println("****"+szcoord2);
 	       String szchrom2 = st2.nextToken();
-	       int nbegin2 = Integer.parseInt(st2.nextToken());
+	       //int nbegin2 = 
+               Integer.parseInt(st2.nextToken());
 	       int nend2 = Integer.parseInt(st2.nextToken());
 
 
@@ -3155,7 +3199,7 @@ public class SHARPR
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    class RankRec
+    static class RankRec
     {
        double dval;
        boolean bprev;
@@ -3167,7 +3211,7 @@ public class SHARPR
        }
     }
 
-    class RankRecCompare implements Comparator
+    static class RankRecCompare implements Comparator
     {
 
        public int compare(Object o1, Object o2)
@@ -3191,7 +3235,7 @@ public class SHARPR
     }
 
 
-
+    /*
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private void createrandomized(ArrayList[][][] alvals, ArrayList[][][] randomvals, Random theRandom)
     {
@@ -3276,6 +3320,8 @@ public class SHARPR
 	}
     }
 
+    */
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static void main(String[] args) throws IOException
@@ -3295,7 +3341,7 @@ public class SHARPR
 
         if (szcommand.equalsIgnoreCase("Version"))
 	{
-	   System.out.println("This is version 1.0.0 of SHARPR");
+	   System.out.println("This is version 1.0.1 of SHARPR");
 	}
 	else if (szcommand.equals("ExecuteAll"))
 	{
@@ -3850,7 +3896,7 @@ public class SHARPR
 	}
 	else 
 	{
-	    System.out.println("Need to specify mode ExecuteAll|Normalize|ConvertTable|Infer|Combine|Interpolate|Enrich|AdjacentChanges");
+	    System.out.println("Need to specify mode ExecuteAll|Normalize|ConvertTable|Infer|Combine|Interpolate|Enrich|AdjacentChanges|Version");
 	}
 
     }
