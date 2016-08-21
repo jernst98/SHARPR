@@ -127,8 +127,6 @@ public class SHARPR
 	this.bstandardize = bstandardize;
 
         deconvolveExact();
-	//temporarily replacing with exact
-	//deconvolve();
     }
 
     /**
@@ -2863,7 +2861,7 @@ public class SHARPR
         brcoords.close();
 
 
-	pw.print("ReporterID1\tReporterID2\t");
+	pw.print("ReporterID1\tReporterID2"); //removed double tab from here
 	pw.print("\tp-val_(reporter1<>reporter2)\tfdr_(reporter1<>reporter2)\tactivating_reporterID\trepressive_reporterID");
 	pw.print("\tactivating_seq\trepressive_seq\tactivating_chrom\tactivating_start\tactivating_end\trepressive_chrom\trepressive_start\trepressive_end");
 	for (int nc = 0; nc < pvalsLESS.length; nc++)
@@ -3341,7 +3339,7 @@ public class SHARPR
 
         if (szcommand.equalsIgnoreCase("Version"))
 	{
-	   System.out.println("This is version 1.0.1 of SHARPR");
+	   System.out.println("This is version 1.0.2 of SHARPR");
 	}
 	else if (szcommand.equals("ExecuteAll"))
 	{
